@@ -47,7 +47,6 @@
                     source-dirs []
                     compiler-options []}}
               opts
-              compiler-options (conj compiler-options "-d" output-path)
               deps-map (or (:deps-map opts)
                            (let [edn-maps (deps/find-edn-maps)]
                              (deps/merge-edns [(:root-edn edn-maps)
@@ -59,6 +58,10 @@
                                                        [:aliases ::compile-alias]
                                                        {:replace-deps compile-deps})
                                              [::compile-alias]))
+              classpath (deps/make-classpath lib-map (conj source-dirs output-path) {})
+              compiler-options (conj compiler-options
+                                     "-d" output-path
+                                     "-cp" classpath)
               compilation-units (.getJavaFileObjectsFromFiles
                                  file-manager
                                  (sequence
