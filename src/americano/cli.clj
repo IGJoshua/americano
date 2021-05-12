@@ -15,10 +15,11 @@
 (s/def ::source-paths (s/coll-of string?))
 (s/def ::output-path string?)
 (s/def ::compiler-options (s/coll-of string? :kind vector?))
+(s/def ::resource-paths (s/coll-of string? :kind vector?))
 (s/def ::include-root-deps? boolean?)
 (s/def ::compiler-alias (s/keys :opt-un [::compile-deps ::output-path
                                          ::compiler-options ::source-paths
-                                         ::include-root-deps?]))
+                                         ::resource-paths ::include-root-deps?]))
 
 (s/def ::deps-map ::deps.spec/deps-map)
 
@@ -41,6 +42,7 @@
   - `:compiler-options`, a vector of options to pass to the compiler
   - `:source-paths`, a vector of directories to find java files in (default;
     [\"src/java\"])
+  - `:resource-paths`, a vector of directories to include on the classpath
   - `:include-root-deps?`, a boolean indicating if the project root dependencies
     should be included for compilation (default; true)"
   [opts]
@@ -48,7 +50,7 @@
     (s/explain-printer ed)
     (let [compiler (ToolProvider/getSystemJavaCompiler)]
       (with-open [file-manager (.getStandardFileManager compiler nil nil nil)]
-        (let [{:keys [source-paths compile-deps output-path compiler-options include-root-deps?]
+        (let [{:keys [source-paths resource-paths compile-deps output-path compiler-options include-root-deps?]
                :or {compile-deps {}
                     output-path "classes"
                     source-paths ["src/java"]
@@ -69,7 +71,7 @@
                                                           :replace-deps)
                                                         compile-deps})
                                              [::compile-alias]))
-              classpath (deps/make-classpath lib-map (conj source-paths output-path) {})
+              classpath (deps/make-classpath lib-map (conj source-paths output-path) {:extra-paths resource-paths})
               compiler-options (conj compiler-options
                                      "-d" output-path
                                      "-cp" classpath)
