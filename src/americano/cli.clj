@@ -15,8 +15,10 @@
 (s/def ::source-paths (s/coll-of string?))
 (s/def ::output-path string?)
 (s/def ::compiler-options (s/coll-of string? :kind vector?))
+(s/def ::include-root-deps? boolean?)
 (s/def ::compiler-alias (s/keys :opt-un [::compile-deps ::output-path
-                                         ::compiler-options ::source-paths]))
+                                         ::compiler-options ::source-paths
+                                         ::include-root-deps?]))
 
 (s/def ::deps-map ::deps.spec/deps-map)
 
@@ -32,20 +34,26 @@
   "Compiles java code from the given paths, using its own set of dependencies.
 
   The `opts` map has the following keys:
-  - `:compile-deps`, a dependencies map (like the `:deps` key in a `deps.edn` file)
-  - `:output-path`, a file path to place the resulting class files into
+  - `:compile-deps`, a dependencies map (like the `:deps` key in a `deps.edn`
+    file)
+  - `:output-path`, a file path to place the resulting class files into (default;
+    \"classes\")
   - `:compiler-options`, a vector of options to pass to the compiler
-  - `:source-paths`, a vector of directories to find java files in"
+  - `:source-paths`, a vector of directories to find java files in (default;
+    [\"src/java\"])
+  - `:include-root-deps?`, a boolean indicating if the project root dependencies
+    should be included for compilation (default; true)"
   [opts]
   (if-let [ed (s/explain-data ::compiler-alias opts)]
     (s/explain-printer ed)
     (let [compiler (ToolProvider/getSystemJavaCompiler)]
       (with-open [file-manager (.getStandardFileManager compiler nil nil nil)]
-        (let [{:keys [source-paths compile-deps output-path compiler-options]
+        (let [{:keys [source-paths compile-deps output-path compiler-options include-root-deps?]
                :or {compile-deps {}
                     output-path "classes"
-                    source-paths []
-                    compiler-options []}}
+                    source-paths ["src/java"]
+                    compiler-options []
+                    include-root-deps? true}}
               opts
               deps-map (or (:deps-map opts)
                            (let [edn-maps (deps/find-edn-maps)]
@@ -56,7 +64,10 @@
                        deps-map
                        (deps/combine-aliases (assoc-in deps-map
                                                        [:aliases ::compile-alias]
-                                                       {:replace-deps compile-deps})
+                                                       {(if include-root-deps?
+                                                          :override-deps
+                                                          :replace-deps)
+                                                        compile-deps})
                                              [::compile-alias]))
               classpath (deps/make-classpath lib-map (conj source-paths output-path) {})
               compiler-options (conj compiler-options
