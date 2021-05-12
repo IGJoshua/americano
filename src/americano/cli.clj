@@ -48,13 +48,17 @@
                     compiler-options []}}
               opts
               compiler-options (conj compiler-options "-d" output-path)
-              deps-map (dissoc (or (:deps-map opts)
-                                   (let [edn-maps (deps/find-edn-maps)]
-                                     (deps/merge-edns [(:root-edn edn-maps)
-                                                       (:user-edn edn-maps)
-                                                       (:project-edn edn-maps)])))
-                               :aliases)
-              lib-map (deps/resolve-deps deps-map {:override-deps compile-deps})
+              deps-map (or (:deps-map opts)
+                           (let [edn-maps (deps/find-edn-maps)]
+                             (deps/merge-edns [(:root-edn edn-maps)
+                                               (:user-edn edn-maps)
+                                               (:project-edn edn-maps)])))
+              lib-map (deps/resolve-deps
+                       deps-map
+                       (deps/combine-aliases (assoc-in deps-map
+                                                       [:aliases ::compile-alias]
+                                                       {:replace-deps compile-deps})
+                                             [::compile-alias]))
               compilation-units (.getJavaFileObjectsFromFiles
                                  file-manager
                                  (sequence
