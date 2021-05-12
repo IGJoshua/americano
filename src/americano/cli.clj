@@ -12,11 +12,11 @@
    (javax.tools JavaCompiler ToolProvider)))
 
 (s/def ::compile-deps ::deps.spec/deps)
-(s/def ::source-dirs (s/coll-of string?))
+(s/def ::source-paths (s/coll-of string?))
 (s/def ::output-path string?)
 (s/def ::compiler-options (s/coll-of string? :kind vector?))
 (s/def ::compiler-alias (s/keys :opt-un [::compile-deps ::output-path
-                                         ::compiler-options ::source-dirs]))
+                                         ::compiler-options ::source-paths]))
 
 (s/def ::deps-map ::deps.spec/deps-map)
 
@@ -35,16 +35,16 @@
   - `:compile-deps`, a dependencies map (like the `:deps` key in a `deps.edn` file)
   - `:output-path`, a file path to place the resulting class files into
   - `:compiler-options`, a vector of options to pass to the compiler
-  - `:source-dirs`, a vector of directories to find java files in"
+  - `:source-paths`, a vector of directories to find java files in"
   [opts]
   (if-let [ed (s/explain-data ::compiler-alias opts)]
     (s/explain-printer ed)
     (let [compiler (ToolProvider/getSystemJavaCompiler)]
       (with-open [file-manager (.getStandardFileManager compiler nil nil nil)]
-        (let [{:keys [source-dirs compile-deps output-path compiler-options]
+        (let [{:keys [source-paths compile-deps output-path compiler-options]
                :or {compile-deps {}
                     output-path "classes"
-                    source-dirs []
+                    source-paths []
                     compiler-options []}}
               opts
               deps-map (or (:deps-map opts)
@@ -58,7 +58,7 @@
                                                        [:aliases ::compile-alias]
                                                        {:replace-deps compile-deps})
                                              [::compile-alias]))
-              classpath (deps/make-classpath lib-map (conj source-dirs output-path) {})
+              classpath (deps/make-classpath lib-map (conj source-paths output-path) {})
               compiler-options (conj compiler-options
                                      "-d" output-path
                                      "-cp" classpath)
@@ -69,7 +69,7 @@
                                         (mapcat file-seq)
                                         (filter #(.isFile %))
                                         (filter java-path?))
-                                  source-dirs))]
+                                  source-paths))]
           (.call (.getTask compiler nil file-manager nil compiler-options nil
                            compilation-units)))))))
 (s/fdef javac
