@@ -18,7 +18,7 @@ This library is available on Clojars, and can be installed as either a Maven
 dependency or a Git one in your `deps.edn` file. Just add one of the following
 coords as a dependency where it's needed (read on to see where it's needed).
 
-```
+```clojure
 org.suskalo/americano {:mvn/version "0.1.0-SNAPSHOT"}
 IGJoshua/americano {:git/url "https://github.com/IGJoshua/americano"
                     :sha "a9da9da8e484162042067f19b05e7927b8de709d"}
@@ -27,7 +27,7 @@ IGJoshua/americano {:git/url "https://github.com/IGJoshua/americano"
 ## Usage
 In order to use americano, you simply need to define an alias that you will run.
 
-```
+```clojure
 :aliases {:compile-java {:replace-deps {org.suskalo/americano {:mvn/version "0.1.0-SNAPSHOT"}}
                          :exec-fn americano.cli/javac
                          :exec-args {:source-paths ["src/java"]}}}
@@ -40,7 +40,7 @@ directory by default.
 Additionally, you can use aliases to "store" the arguments when multiple passes
 of compilation need to occur.
 
-```
+```clojure
 :aliases {:compile-java {:replace-deps {org.suskalo/americano {:mvn/version "0.1.0-SNAPSHOT"}}
                          :exec-fn americano.cli/compile-aliases
                          :exec-args {:aliases [:java/pass-1 :java/pass-2]}}
