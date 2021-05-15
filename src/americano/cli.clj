@@ -83,6 +83,7 @@
                                         (filter #(.isFile %))
                                         (filter java-path?))
                                   source-paths))]
+          (.mkdir (io/file output-path))
           (.call (.getTask compiler nil file-manager nil compiler-options nil
                            compilation-units)))))))
 (s/fdef javac
