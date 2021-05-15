@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.suskalo</groupId>
   <artifactId>americano</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <name>americano</name>
   <description>A simple tool for compiling Java from the Clojure CLI.</description>
   <url>https://github.com/IGJoshua/americano</url>
@@ -22,7 +22,7 @@
     <url>https://github.com/IGJoshua/americano</url>
     <connection>scm:git:git://github.com/IGJoshua/americano.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/IGJoshua/americano.git</developerConnection>
-    <tag>v1.0.0</tag>
+    <tag>v1.0.1</tag>
   </scm>
   <dependencies>
     <dependency>
