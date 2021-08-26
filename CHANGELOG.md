@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
 
 ## [Unreleased]
+### Added
+- `prep-lib` function for use with `:deps/prep-lib` that reads the deps edn file to dispatch to the correct function
 
 ## [1.0.1]
 ### Fixed
