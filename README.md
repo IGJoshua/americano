@@ -20,8 +20,8 @@ coords as a dependency where it's needed (read on to see where it's needed).
 
 ```clojure
 org.suskalo/americano {:mvn/version "1.2.0"}
-IGJoshua/americano {:git/url "https://github.com/IGJoshua/americano"
-                    :sha "a9da9da8e484162042067f19b05e7927b8de709d"}
+com.github.IGJoshua/americano {:git/tag "v1.2.0"
+                               :git/sha "d2ac4a2"}
 ```
 
 ## Usage
