@@ -6,10 +6,9 @@
    [clojure.spec.alpha :as s]
    [clojure.tools.deps.alpha :as deps]
    [clojure.tools.deps.alpha.specs :as deps.spec]
-   [clojure.set :as set]
    [clojure.string :as str])
   (:import
-   (javax.tools JavaCompiler ToolProvider)))
+   (javax.tools ToolProvider)))
 
 (s/def ::compile-deps ::deps.spec/deps)
 (s/def ::source-paths (s/coll-of string?))
