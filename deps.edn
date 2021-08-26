@@ -13,9 +13,7 @@
 
   :jar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.193"}}
         :exec-fn hf.depstar/jar
-        :exec-args {:jar "americano.jar" :sync-pom true
-                    :group-id "org.suskalo" :artifact-id "americano"
-                    :version "1.0.1"}}
+        :exec-args {:jar "americano.jar"}}
   :install {:replace-deps {slipset/deps-deploy {:mvn/version "0.1.5"}}
             :exec-fn deps-deploy.deps-deploy/deploy
             :exec-args {:installer :local :artifact "americano.jar"}}
