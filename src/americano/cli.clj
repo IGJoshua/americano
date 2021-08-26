@@ -8,6 +8,7 @@
    [clojure.tools.deps.alpha.specs :as deps.spec]
    [clojure.string :as str])
   (:import
+   (java.io PushbackReader)
    (javax.tools ToolProvider)))
 
 (s/def ::compile-deps ::deps.spec/deps)
@@ -109,3 +110,23 @@
         (javac javac-opts)))))
 (s/fdef compile-aliases
   :args (s/cat :opts (s/keys :req-un [::aliases])))
+
+(defn prep-lib
+  "Builds the project using the alias specified in :deps/prep-lib.
+
+  Takes one argument which is ignored as it is always nil when used with
+  :deps/prep-lib."
+  [_]
+  (let [deps-edn (-> "deps.edn"
+                     io/file
+                     io/reader
+                     PushbackReader.
+                     edn/read)
+        build-alias (:alias (:deps/prep-lib deps-edn))
+        alias-data (get-in deps-edn [:aliases build-alias])
+        alias-fn (if-let [f (:exec-fn alias-data)]
+                   (requiring-resolve f)
+                   (throw (IllegalArgumentException.
+                           (str "Missing :exec-fn in alias " build-alias))))
+        alias-args (:exec-args alias-data)]
+    (alias-fn alias-args)))
